@@ -621,11 +621,9 @@ impl PolVestingContract {
         let mut i = offset;
         while i < end {
             let schedule_id = ids.get(i).unwrap();
-            if let Some(schedule) = env
-                .storage()
-                .persistent()
-                .get::<DataKey, PolVesting>(&DataKey::Vesting(beneficiary.clone(), schedule_id))
-            {
+            let key = DataKey::Vesting(beneficiary.clone(), schedule_id);
+            if let Some(schedule) = env.storage().persistent().get::<DataKey, PolVesting>(&key) {
+                Self::bump_schedule(&env, &key, &schedule);
                 schedules.push_back(schedule);
             }
             i += 1;
